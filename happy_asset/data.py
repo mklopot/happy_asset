@@ -22,19 +22,19 @@ class Data:
         return sum([float(x["Low"]) for x in self.historical[-n:]]) / n
 
     def update(self, new_data):
-        logging.info("Updating data structure with new data")
+        logging.debug("Updating data structure with new data")
         self.current = float(new_data['Low'])
 
         # Update historical data once per calendar day
         if not self.historical:
-            logging.info("Initializing first historical data value")
+            logging.debug("Initializing first historical data value")
             self.historical.append(new_data)
         else: 
-            logging.info("New datum date %s", dateparser.parse(new_data["Date"]))
-            logging.info("Last historical datum date %s", dateparser.parse(self.historical[-1]["Date"]))
+            logging.debug("New datum date %s", dateparser.parse(new_data["Date"]))
+            logging.debug("Last historical datum date %s", dateparser.parse(self.historical[-1]["Date"]))
             if dateparser.parse(new_data["Date"]) - dateparser.parse(self.historical[-1]["Date"]) >= datetime.timedelta(days=1):
-                logging.info("Appending to historical data: interval greater than 1 day")
+                logging.debug("Appending to historical data: interval greater than 1 day")
                 self.historical.append(new_data)
             else:
-                logging.info("Not appending to historical data: new value too close in time")
+                logging.debug("Not appending to historical data: new value too close in time")
              

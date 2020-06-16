@@ -9,5 +9,5 @@ class Strategy:
         action = None
         for rule in self.rules:
             action = rule(data)
-        logging.info("Signaling: %s", action)
+        logging.debug("Signaling: %s", action)
         return action
