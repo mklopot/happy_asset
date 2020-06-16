@@ -13,5 +13,5 @@ class Backend(ABC):
         pass
 
     @abstractmethod
-    def get_price(self)
+    def get_price(self):
         pass

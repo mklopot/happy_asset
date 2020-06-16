@@ -1,6 +1,9 @@
 class Position:
     def __init__(self, amount):
-        self.amount = amount_sat
+        # Dollar amount of the position
+        self.amount = amount
+
+        self.asset = 0
         self.buy_price = None
         self.sell_price = None
         self.buy_timestamp = None
