@@ -7,9 +7,9 @@ def rule3percent(data):
         if data.current < data.n_back_avg(2) * .97:
             logging.info("Signaling 'buy'")
             return "buy"
-        if data.current> data.n_back_avg(2) * 1.03:
+        if data.current> data.n_back_avg(2) * 1.04:
             logging.info("Signaling 'sell'")
-            return "sell"
+            return "sell_limit"
         logging.info("No signal")
     else:
         logging.debug("Insufficient data")

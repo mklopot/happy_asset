@@ -3,7 +3,7 @@ import logging
 
 import backend, strategy, data, trader, scheduler, rules
 
-logging.basicConfig(level=logging.INFO, format='%(levelname)s %(module)s %(funcName)s() %(message)s')
+logging.basicConfig(level=logging.DEBUG, format='%(levelname)s %(module)s %(funcName)s() %(message)s')
 logging.info("Logging initialized")
 
 my_backend_module = importlib.import_module("replay")

@@ -18,8 +18,12 @@ class Backend(backend.Backend):
     def sell(self, asset):
            return asset * float(self.data[self.index]["Low"]) 
 
-    def get_price(self):
-        result = self.data[self.index]
+    def next(self):
         self.index += 1
-        return result
-    
+        if self.index >= len(self.data):
+            self.index = len(self.data) - 1
+            return False
+         
+
+    def get_price(self):
+        return self.data[self.index]

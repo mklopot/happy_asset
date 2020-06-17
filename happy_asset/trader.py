@@ -35,7 +35,7 @@ class Trader:
                 logging.debug("Buy succeeded")
                 self.open_queue.appendleft(self.new_queue.pop()) 
                 self.open_queue[0].asset = asset
-                self.open_queue[0].buy_price = asset / self.amount 
+                self.open_queue[0].buy_price = self.amount / asset 
                 self.open_queue[0].buy_timestamp = datetime.now()
                 self.open_queue[0].backend = self.backend
 
@@ -44,6 +44,27 @@ class Trader:
         if self.open_queue:
             logging.info("Open position available, attempting to sell")
             position = self.open_queue[-1]
+            self._sell(position)
+
+    def sell_limit(self):
+        "Similar to SELL, but do not close any positions at a loss"
+
+        logging.debug("Trader received 'sell_limit' action")
+        if self.open_queue:
+            logging.debug("Open position available, filtering by acceptable price")
+            current_price = float(self.backend.get_price()['Low'])
+            positions = list(filter(lambda p: p.buy_price < current_price, self.open_queue))
+            if positions:
+                position = positions[-1]
+                logging.info("Found a position to close: %s", position)
+                self._sell(position)
+
+    def sell_all(self):
+        while self.open_queue:
+            self._sell(self.open_queue[-1])
+
+    def _sell(self, position):
+        if position in self.open_queue:
             proceeds = position.backend.sell(position.asset)
             logging.info("Sold for %s @ %s", proceeds, proceeds / position.asset)
             if proceeds:
@@ -57,9 +78,5 @@ class Trader:
                         self.new_queue.append(Position(amount=self.amount))
                         self.cash -= self.amount
                         logging.info("Recycling cash into a new position, cash now %s", self.cash)
-               
-            
-            
-                
-        
- 
+
+
