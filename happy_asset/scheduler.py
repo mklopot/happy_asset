@@ -17,10 +17,15 @@ class Scheduler:
                         logging.debug("Passing action to trader: %s", action)
                         getattr(self.trader, action, None)()
                         self.info()
+
+                    # Keep track of how well the trader is doing
+                    value = self.trader.value()
+                    value["Date"] = price["Date"]
+                    self.data.historical_value.append(value)
             else:
-                logging.info("Could not advance backend to next datum, closing all positions and exiting")
-                self.trader.sell_all()
+                logging.info("Could not advance backend to next datum, generating a graph and exiting")
                 self.info()
+                self.data.graph()
                 exit()
          
             

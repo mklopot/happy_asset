@@ -23,7 +23,7 @@ class Trader:
         logging.debug("Trader initialized")
 
     def __str__(self):
-        return "new: {}, open: {}, closed: {}, cash: {}".format(len(self.new_queue), len(self.open_queue), len(self.closed_queue), self.cash)
+        return "{} new: {}, open: {}, closed: {}, cash: {} value: {}".format(self.backend.get_price()["Date"], len(self.new_queue), len(self.open_queue), len(self.closed_queue), self.cash, self.value())
 
     def buy(self):
         logging.debug("Trader received 'buy' action")
@@ -79,4 +79,12 @@ class Trader:
                         self.cash -= self.amount
                         logging.info("Recycling cash into a new position, cash now %s", self.cash)
 
-
+    def value(self):
+        openpos_value = 0
+        price = float(self.backend.get_price()['Low'])
+        for position in self.open_queue:
+            openpos_value += position.asset * price
+        cash_value = self.amount * len(self.new_queue) + self.cash
+        value = openpos_value + cash_value
+        return {"Value": value, "Cash": cash_value, "Open": openpos_value} 
+            

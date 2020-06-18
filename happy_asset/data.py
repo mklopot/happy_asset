@@ -1,9 +1,12 @@
 import csv, datetime, dateparser
 import logging
+import plotly.graph_objects as go
 
 class Data:
     def __init__(self, historical_csv_path=None):
         self.current = None
+
+        self.historical_value = []
 
         # Historical data in chronological order
         self.historical = []
@@ -37,4 +40,13 @@ class Data:
                 self.historical.append(new_data)
             else:
                 logging.debug("Not appending to historical data: new value too close in time")
+
+    def graph(self):
+        fig = go.Figure(data=[
+                            go.Line(x=[row['Date'] for row in self.historical], y=[row['Low'] for row in self.historical], name="Price"),
+                            go.Line(x=[row['Date'] for row in self.historical_value], y=[row['Value'] for row in self.historical_value], name="Value"),
+                            go.Line(x=[row['Date'] for row in self.historical_value], y=[row['Cash'] for row in self.historical_value], name="Cash"),
+                            go.Line(x=[row['Date'] for row in self.historical_value], y=[row['Open'] for row in self.historical_value], name="Open")
+                             ])
+        fig.show()
              
