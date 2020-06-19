@@ -1,9 +1,9 @@
 import time, logging
 
 class Scheduler:
-    def __init__(self, trader, strategy, data, interval):
+    def __init__(self, trader, rules, data, interval):
         self.trader = trader
-        self.strategy = strategy
+        self.rules = rules
         self.data = data
         self.interval = interval
 
@@ -12,7 +12,13 @@ class Scheduler:
                 price = self.trader.backend.get_price()
                 if price:
                     self.data.update(price)    
-                    action = self.strategy.apply(self.data)
+
+                    action = None
+                    for rule in self.rules:
+                        maybe_action = rule(self.data)
+                        if maybe_action:
+                            action = maybe_action
+
                     if action:
                         logging.debug("Passing action to trader: %s", action)
                         getattr(self.trader, action, None)()

@@ -12,16 +12,19 @@ class Trader:
         # The size of each position
         self.amount = amount_asset
 
-
         self.cash = cash
 
         logging.debug("Trader initialized")
 
     def __str__(self):
-        return "{} open: {}, closed: {}, cash: {} value: {}".format(self.backend.get_price()["Date"], len(self.open_queue), len(self.closed_queue), self.cash, self.value())
+        return "{} open: {}, closed: {}, value: {}".format(
+            self.backend.get_price()["Date"],
+            len(self.open_queue),
+            len(self.closed_queue),
+            self.value())
 
     def buy(self):
-        logging.debug("Trader received 'buy' action")
+        logging.debug("%s Trader received 'buy' action", self.backend.get_price()["Date"])
         price = float(self.backend.get_price()["Low"]) * self.amount 
         if self.cash >= price:
             logging.info("Cash available, attempting to buy")
@@ -32,21 +35,25 @@ class Trader:
                 logging.debug("Buy succeeded")
                 self.open_queue.appendleft(Position()) 
                 self.open_queue[0].asset = asset
-                self.open_queue[0].buy_price = self.amount / asset 
+                self.open_queue[0].buy_price =  float(self.backend.get_price()["Low"]) 
                 self.open_queue[0].buy_timestamp = datetime.now()
                 self.open_queue[0].backend = self.backend
+        else:
+            logging.info("Insufficient cash available")
 
     def sell(self):
-        logging.debug("Trader received 'sell' action")
+        logging.debug("%s Trader received 'sell' action", self.backend.get_price()["Date"])
         if self.open_queue:
             logging.info("Open position available, attempting to sell")
             position = self.open_queue[-1]
             self._sell(position)
+        else:
+            logging.info("No open positions")
 
     def sell_limit(self):
         "Similar to SELL, but do not close any positions at a loss"
 
-        logging.debug("Trader received 'sell_limit' action")
+        logging.debug("%s Trader received 'sell_limit' action", self.backend.get_price()["Date"])
         if self.open_queue:
             logging.debug("Open position available, filtering by acceptable price")
             current_price = float(self.backend.get_price()['Low'])
@@ -55,6 +62,10 @@ class Trader:
                 position = positions[-1]
                 logging.info("Found a position to close: %s", position)
                 self._sell(position)
+            else:
+                logging.info("No matching positions")
+        else:
+            logging.info("No open positions")
 
     def sell_all(self):
         while self.open_queue:
