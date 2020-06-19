@@ -81,10 +81,12 @@ class Trader:
 
     def value(self):
         openpos_value = 0
+        asset = 0
         price = float(self.backend.get_price()['Low'])
         for position in self.open_queue:
             openpos_value += position.asset * price
+            asset += position.asset
         cash_value = self.amount * len(self.new_queue) + self.cash
         value = openpos_value + cash_value
-        return {"Value": value, "Cash": cash_value, "Open": openpos_value} 
+        return {"Value": value, "Cash": cash_value, "Open": openpos_value, "Asset": asset} 
             

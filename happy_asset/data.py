@@ -46,7 +46,8 @@ class Data:
                             go.Line(x=[row['Date'] for row in self.historical], y=[row['Low'] for row in self.historical], name="Price"),
                             go.Line(x=[row['Date'] for row in self.historical_value], y=[row['Value'] for row in self.historical_value], name="Value"),
                             go.Line(x=[row['Date'] for row in self.historical_value], y=[row['Cash'] for row in self.historical_value], name="Cash"),
-                            go.Line(x=[row['Date'] for row in self.historical_value], y=[row['Open'] for row in self.historical_value], name="Open")
+                            go.Line(x=[row['Date'] for row in self.historical_value], y=[row['Open'] for row in self.historical_value], name="Open"),
+                            go.Line(x=[row['Date'] for row in self.historical_value], y=[row['Asset'] for row in self.historical_value], name="Asset")
                              ])
         fig.show()
              
