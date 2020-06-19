@@ -10,7 +10,7 @@ my_backend_module = importlib.import_module("replay")
 my_backend = my_backend_module.Backend()
 
 my_strategy = strategy.Strategy([getattr(rules, "rule3percent")])
-my_trader = trader.Trader(my_backend, 1, 3000, True) 
+my_trader = trader.Trader(my_backend, 300, .4) 
 
 my_scheduler = scheduler.Scheduler(my_trader, my_strategy, data.Data(), 0)
 my_scheduler()

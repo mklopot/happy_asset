@@ -1,8 +1,5 @@
 class Position:
-    def __init__(self, amount):
-        # Dollar amount of the position
-        self.amount = amount
-
+    def __init__(self):
         self.asset = 0
         self.buy_price = None
         self.sell_price = None
@@ -11,8 +8,7 @@ class Position:
         self.backend = None
 
     def __str__(self):
-        return "${} position for {} asset, buy_price: {} at {}, sell_price: {} at {}, backend {}".format(
-            self.amount,
+        return "Position for {} asset, buy_price: {} at {}, sell_price: {} at {}, backend {}".format(
             self.asset,
             self.buy_price,
             self.buy_timestamp,

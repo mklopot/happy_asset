@@ -4,36 +4,33 @@ from datetime import datetime
 import logging
 
 class Trader:
-    def __init__(self, backend, num_positions, amount_cents, recycle=True):
-        self.new_queue = deque()
+    def __init__(self, backend, cash, amount_asset):
         self.open_queue = deque()
         self.closed_queue = deque()
         self.backend = backend
         
         # The size of each position
-        self.amount = amount_cents
+        self.amount = amount_asset
 
-        # Create new positions with proceeds from closed positions
-        self.recycle = recycle
 
-        self.cash = 0
+        self.cash = cash
 
-        for _ in range(num_positions):
-            self.new_queue.append(Position(amount=self.amount))
         logging.debug("Trader initialized")
 
     def __str__(self):
-        return "{} new: {}, open: {}, closed: {}, cash: {} value: {}".format(self.backend.get_price()["Date"], len(self.new_queue), len(self.open_queue), len(self.closed_queue), self.cash, self.value())
+        return "{} open: {}, closed: {}, cash: {} value: {}".format(self.backend.get_price()["Date"], len(self.open_queue), len(self.closed_queue), self.cash, self.value())
 
     def buy(self):
         logging.debug("Trader received 'buy' action")
-        if self.new_queue:
-            logging.info("New position available, attempting to buy")
-            asset = self.backend.buy(self.amount)
+        price = float(self.backend.get_price()["Low"]) * self.amount 
+        if self.cash >= price:
+            logging.info("Cash available, attempting to buy")
+            asset = self.backend.buy(price)
+            self.cash -= price
             logging.info("Purchased %s @ %s", asset, self.amount / asset)
             if asset:
                 logging.debug("Buy succeeded")
-                self.open_queue.appendleft(self.new_queue.pop()) 
+                self.open_queue.appendleft(Position()) 
                 self.open_queue[0].asset = asset
                 self.open_queue[0].buy_price = self.amount / asset 
                 self.open_queue[0].buy_timestamp = datetime.now()
@@ -73,11 +70,6 @@ class Trader:
                 self.closed_queue[0].sell_price = self.closed_queue[0].asset / proceeds 
                 self.closed_queue[0].sell_timestamp = datetime.now()
                 self.cash += proceeds
-                if self.recycle:
-                    while self.cash >= self.amount:
-                        self.new_queue.append(Position(amount=self.amount))
-                        self.cash -= self.amount
-                        logging.info("Recycling cash into a new position, cash now %s", self.cash)
 
     def value(self):
         openpos_value = 0
@@ -86,7 +78,6 @@ class Trader:
         for position in self.open_queue:
             openpos_value += position.asset * price
             asset += position.asset
-        cash_value = self.amount * len(self.new_queue) + self.cash
-        value = openpos_value + cash_value
-        return {"Value": value, "Cash": cash_value, "Open": openpos_value, "Asset": asset} 
+        value = openpos_value + self.cash
+        return {"Value": value, "Cash": self.cash, "Open": openpos_value, "Asset": asset} 
             
