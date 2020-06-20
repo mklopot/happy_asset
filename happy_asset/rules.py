@@ -26,14 +26,14 @@ def uptrend_buy(data):
     logging.debug("Uptrend buy rule called")
     price7back = None
     try:
-         price7back = float(data.historical[-7])
+         price7back = float(data.historical[-7]['Low'])
     except:
-        pass
+        logging.info("Could not obtain hitorical data far enough back")
 
     if data.current and price7back:
         logging.debug("Evaluating data")
-        logging.info("7-day gain: %d", data.currnet / price7back - 1)
-        if data.current > price7back * 1.09:
+        logging.info("7-day gain: %f", data.current / price7back - 1)
+        if data.current > price7back * 1.15:
             logging.info("Signaling 'buy'")
             return "buy"
         logging.debug("No signal")
@@ -44,14 +44,14 @@ def uptrend_sell(data):
     logging.debug("Uptrend sell rule called")
     price7back = None
     try:
-         price7back = float(data.historical[-7])
+         price7back = float(data.historical[-7]['Low'])
     except:
         pass
 
     if data.current and price7back:
         logging.debug("Evaluating data")
-        logging.info("7-day loss: %d", 1 - data.currnet / price7back)
-        if data.current < price7back * .91:
+        logging.info("7-day loss: %f", 1 - data.current / price7back)
+        if data.current < price7back * .86:
             logging.info("Signaling 'sell'")
             return "sell"
         logging.debug("No signal")
