@@ -25,17 +25,18 @@ class Trader:
 
     def buy(self):
         logging.debug("%s Trader received 'buy' action", self.backend.get_price()["Date"])
-        price = float(self.backend.get_price()["Low"]) * self.amount 
-        if self.cash >= price:
+        price = float(self.backend.get_price()["Low"]) 
+        cost = price * self.amount 
+        if self.cash >= cost:
             logging.info("Cash available, attempting to buy")
-            asset = self.backend.buy(price)
-            self.cash -= price
-            logging.info("Purchased %s @ %s", asset, self.amount / asset)
+            asset = self.backend.buy(cost)
+            self.cash -= cost
+            logging.info("Purchased %s @ %s", asset, price)
             if asset:
                 logging.debug("Buy succeeded")
                 self.open_queue.appendleft(Position()) 
                 self.open_queue[0].asset = asset
-                self.open_queue[0].buy_price =  float(self.backend.get_price()["Low"]) 
+                self.open_queue[0].buy_price = price  
                 self.open_queue[0].buy_timestamp = datetime.now()
                 self.open_queue[0].backend = self.backend
         else:

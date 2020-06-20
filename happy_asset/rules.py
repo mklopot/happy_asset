@@ -34,7 +34,7 @@ def uptrend_buy(data):
         logging.debug("Evaluating data")
         logging.info("7-day gain: %f", data.current / price7back - 1)
         if data.current > price7back * 1.15:
-            logging.info("Signaling 'buy'")
+            logging.info(" %s Signaling 'buy'", data.historical[-1]["Date"])
             return "buy"
         logging.debug("No signal")
     else:

@@ -3,7 +3,10 @@ import logging
 
 import backend, rules, data, trader, scheduler, rules
 
-logging.basicConfig(level=logging.INFO, format='%(levelname)s %(module)s %(funcName)s() %(message)s')
+logging.basicConfig(level=logging.INFO,
+                    format='%(levelname)s %(module)s %(funcName)s() %(message)s',
+                    filename="happy_asset.log", filemode="w")
+
 logging.info("Logging initialized")
 
 my_backend_module = importlib.import_module("replay")
